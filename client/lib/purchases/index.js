@@ -45,7 +45,8 @@ function getPurchasesBySite( purchases, sites ) {
 				 * we fall back on the domain. */
 				slug: siteObject ? siteObject.slug : currentValue.domain,
 				title: currentValue.siteName || currentValue.domain || '',
-				purchases: [ currentValue ]
+				purchases: [ currentValue ],
+				url: siteObject.URL
 			} );
 		}
 
