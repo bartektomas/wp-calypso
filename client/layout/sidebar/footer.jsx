@@ -21,13 +21,13 @@ const SidebarFooter = ( { translate, children, onOpenChat } ) => (
 		<Button borderless href={ config( 'signup_url' ) + '?ref=calypso-selector' }>
 			<Gridicon icon="add-outline" /> { translate( 'Add New Site' ) }
 		</Button>
-		<Button className="sidebar__footer__help" borderless href="/help" title={ translate( 'Help' ) }>
+		<Button className="sidebar__footer-help" borderless href="/help" title={ translate( 'Help' ) }>
 			<Gridicon icon="help-outline" />
 		</Button>
 		{ config.isEnabled( 'happychat' )
 			? (
-			<Button className="sidebar__footer__support-chat" borderless onClick={ onOpenChat } title={ translate( 'Support Chat' ) }>
-				<svg className="gridicon" width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M20 4h-8c-1.1 0-2 .9-2 2v2h2c1.7 0 3 1.3 3 3v2h2v3.5l3.3-2.3c1.1-.8 1.7-2 1.7-3.3V6c0-1.1-.9-2-2-2z"/><path d="M14 11v5c0 1.1-.9 2-2 2H7v3.5l-3.3-2.3c-1.1-.8-1.7-2-1.7-3.3V11c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2z"/></g></svg>
+			<Button className="sidebar__footer-chat" borderless onClick={ onOpenChat } title={ translate( 'Support Chat' ) }>
+				<Gridicon icon="chat" />
 			</Button>
 			) : null
 		}
