@@ -62,8 +62,8 @@ export class Tour extends Component {
 			stepComponent.props.name === step );
 
 		return nextStep || null;
+		}
 	}
-}
 
 export class Step extends Component {
 	static propTypes = {
@@ -134,10 +134,17 @@ export class Step extends Component {
 	}
 
 	quitIfInvalidRoute( props, context ) {
+		debug( '++++++++++++++++++++++++++++++++++++++++++' );
 		debug( 'Step.quitIfInvalidRoute' );
 		const { step, branching, lastAction } = context;
 		const hasContinue = !! branching[ step ].continue;
 		const hasJustNavigated = lastAction.type === ROUTE_SET;
+
+		debug( 'this.section', this.section );
+		debug( 'lastAction', lastAction );
+
+		debug( '******************************************' );
+
 
 		if ( ! hasContinue && hasJustNavigated &&
 				this.isDifferentSection( lastAction.path ) ) {
@@ -154,6 +161,11 @@ export class Step extends Component {
 
 	isDifferentSection( path ) {
 		debug( 'isDifferentSection', this.section, path );
+		if ( this.section === undefined && path !== undefined ) {
+			debug( 'isDifferentSection: this.section is undefined and path is not, returning TRUE' );
+			return true;
+		}
+		debug( 'isDifferentSection: returning', this.section && path && this.section !== this.pathToSection( path ) );
 		return this.section && path &&
 			this.section !== this.pathToSection( path );
 	}
@@ -378,13 +390,13 @@ export class Link extends Component {
 export const makeTour = tree => {
 	return class extends Component {
 		static propTypes = {
-			isValid: PropTypes.func.isRequired,
-			lastAction: PropTypes.object,
-			next: PropTypes.func.isRequired,
-			quit: PropTypes.func.isRequired,
+		isValid: PropTypes.func.isRequired,
+		lastAction: PropTypes.object,
+		next: PropTypes.func.isRequired,
+		quit: PropTypes.func.isRequired,
 			shouldPause: PropTypes.bool.isRequired,
 			stepName: PropTypes.string.isRequired,
-		};
+	};
 
 		static childContextTypes = contextTypes;
 
@@ -413,7 +425,7 @@ export const makeTour = tree => {
 				branching: tourBranching( tree ),
 				tour: tree.props.name,
 				tourVersion: tree.props.version,
-			};
+};
 		}
 
 		render() {
