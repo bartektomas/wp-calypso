@@ -17,10 +17,6 @@ import { getActionLog } from 'state/ui/action-log/selectors';
 import { nextGuidedTourStep, quitGuidedTour } from 'state/ui/guided-tours/actions';
 
 class GuidedTours extends Component {
-	constructor() {
-		super();
-	}
-
 	shouldComponentUpdate( nextProps ) {
 		return this.props.tourState !== nextProps.tourState;
 	}

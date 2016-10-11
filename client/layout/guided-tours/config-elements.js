@@ -22,13 +22,14 @@ import debugFactory from 'debug';
 import Card from 'components/card';
 import Button from 'components/button';
 import ExternalLink from 'components/external-link';
+import { ROUTE_SET } from 'state/action-types';
 import { tourBranching } from './config-parsing';
 import {
 	posToCss,
 	getStepPosition,
 	getValidatedArrowPosition,
 	query,
-	targetForSlug
+	targetForSlug,
 } from './positioning';
 
 const debug = debugFactory( 'calypso:guided-tours' );
@@ -152,20 +153,19 @@ export class Step extends Component {
 	quitIfInvalidRoute( props, context ) {
 		debug( 'Step.quitIfInvalidRoute' );
 		const { step, branching, lastAction } = context;
-		const stepBranching = branching[ step ];
-		const hasContinue = !! stepBranching.continue;
-		const isRouteSet = lastAction.type === 'ROUTE_SET';
+		const hasContinue = !! branching[ step ].continue;
+		const hasJustNavigated = lastAction.type === ROUTE_SET;
 
-		if ( ( ! hasContinue ) && isRouteSet &&
+		if ( ! hasContinue && hasJustNavigated &&
 				this.isDifferentSection( lastAction.path ) ) {
 			defer( () => {
 				debug( 'Step.quitIfInvalidRoute: quitting!' );
-				debug( hasContinue, isRouteSet, lastAction, this.isDifferentSection( lastAction.path ) );
+				debug( hasContinue, hasJustNavigated, lastAction, this.isDifferentSection( lastAction.path ) );
 				this.context.quit();
 			} );
 		} else {
 			debug( 'Step.quitIfInvalidRoute: NOT quitting!' );
-			debug( hasContinue, isRouteSet, lastAction, this.isDifferentSection( lastAction.path ) );
+			debug( hasContinue, hasJustNavigated, lastAction, this.isDifferentSection( lastAction.path ) );
 		}
 	}
 
