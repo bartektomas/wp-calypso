@@ -65,8 +65,13 @@ export function RefreshPostCard( { post, site, feed, onClick = noop, onCommentCl
 				</div>
 			</div>
 			{ post &&
-				<ReaderPostActions post={ post } onCommentClick={ onCommentClick } showEdit={ false } className="ignore-click" /> }
-			<Gridicon icon="ellipsis" />
+				<ReaderPostActions
+					post={ post }
+					showVisit={ true }
+					onCommentClick={ onCommentClick }
+					showEdit={ false }
+					className="ignore-click" />
+			}
 		</Card>
 	);
 }
