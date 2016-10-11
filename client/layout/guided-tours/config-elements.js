@@ -175,8 +175,13 @@ export class Step extends Component {
 			this.section !== this.pathToSection( path );
 	}
 
+	/*
+	 * TODO(mcsf): This assumes `/` points to the Reader. Ideally, we wouldn't
+	 * have to hardcode the exception.
+	 */
 	pathToSection( path ) {
-		return path && path.split( '/' ).slice( 0, 2 ).join( '/' );
+		const section = path && path.split( '/' ).slice( 0, 2 ).join( '/' );
+		return section === '/' ? '/read' : section;
 	}
 
 	skipIfInvalidContext( props, context ) {
