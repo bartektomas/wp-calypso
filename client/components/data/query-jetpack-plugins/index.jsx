@@ -8,7 +8,7 @@ import { isEqual } from 'lodash';
 /**
  * Internal dependencies
  */
-import { fetch } from 'state/plugins/installed/actions';
+import { fetchPlugins } from 'state/plugins/installed/actions';
 import { isRequestingForSites } from 'state/plugins/installed/selectors';
 
 class QueryJetpackPlugins extends Component {
@@ -53,5 +53,5 @@ export default connect(
 			isRequestingForSites: isRequestingForSites( state, sites ),
 		};
 	},
-	{ fetchPlugins: fetch }
+	{ fetchPlugins }
 )( QueryJetpackPlugins );
