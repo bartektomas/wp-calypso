@@ -15,7 +15,6 @@ import page from 'page';
  */
 import analytics from 'lib/analytics';
 import TrackComponentView from 'lib/analytics/track-component-view';
-import { Views as ModalViews } from './constants';
 import PopoverMenu from 'components/popover/menu';
 import PopoverMenuItem from 'components/popover/menu-item';
 import Gridicon from 'components/gridicon';
@@ -23,6 +22,8 @@ import { canUserDeleteItem } from 'lib/media/utils';
 import { getCurrentUser } from 'state/current-user/selectors';
 import { getSiteSlug } from 'state/sites/selectors';
 import PlanStorage from 'my-sites/plan-storage';
+import { setEditorMediaModalView } from 'state/ui/editor/actions';
+import { ModalViews } from 'state/ui/media-modal/constants';
 
 const MediaModalSecondaryActions = React.createClass( {
 	propTypes: {
@@ -32,14 +33,13 @@ const MediaModalSecondaryActions = React.createClass( {
 		activeView: React.PropTypes.oneOf( values( ModalViews ) ),
 		disabled: PropTypes.bool,
 		onDelete: PropTypes.func,
-		onChangeView: PropTypes.func
+		setView: PropTypes.func
 	},
 
 	getDefaultProps() {
 		return {
 			disabled: false,
-			onDelete: noop,
-			onChangeView: noop
+			onDelete: noop
 		};
 	},
 
@@ -63,7 +63,7 @@ const MediaModalSecondaryActions = React.createClass( {
 		analytics.mc.bumpStat( 'editor_media_actions', 'edit_button_dialog' );
 		analytics.ga.recordEvent( 'Media', 'Clicked Dialog Edit Button' );
 
-		this.props.onChangeView( ModalViews.DETAIL );
+		this.props.setView( ModalViews.DETAIL );
 	},
 
 	navigateToPlans() {
@@ -201,9 +201,10 @@ const MediaModalSecondaryActions = React.createClass( {
 	}
 } );
 
-export default connect( ( state, ownProps ) => {
-	return {
+export default connect(
+	( state, ownProps ) => ( {
 		user: getCurrentUser( state ),
 		siteSlug: ownProps.site ? getSiteSlug( state, ownProps.site.ID ) : ''
-	};
-} )( MediaModalSecondaryActions );
+	} ),
+	{ setView: setEditorMediaModalView }
+)( MediaModalSecondaryActions );
