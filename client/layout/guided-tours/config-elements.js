@@ -62,8 +62,8 @@ export class Tour extends Component {
 			stepComponent.props.name === step );
 
 		return nextStep || null;
-		}
 	}
+}
 
 export class Step extends Component {
 	static propTypes = {
