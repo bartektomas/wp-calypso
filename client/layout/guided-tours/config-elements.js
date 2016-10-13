@@ -88,6 +88,8 @@ export class Step extends Component {
 
 	componentWillMount() {
 		this.setSection();
+		this.okayedRouteChanges = {};
+		this.created_timestamp = Date.now();
 		debug( 'Step#componentWillMount: section:', this.section );
 		this.skipIfInvalidContext( this.props, this.context );
 		this.scrollContainer = query( this.props.scrollContainer )[ 0 ] || global.window;
@@ -130,21 +132,77 @@ export class Step extends Component {
 		// e.g. doesn't work when switching from reader start to discover
 		// as the Step gets re-created anew
 		// (better than false positives, though)
+
+		//TODO(lsinger): check whether above still true, maybe it's not
 		this.section = this.pathToSection( location.pathname );
 	}
 
+	okayRouteChange( action ) {
+		debug( 'okayRouteChange ', action.path, this.section );
+		this.okayedRouteChanges[ action.path ] = true;
+	}
+
+	haveOkayedRouteChangeBefore( action ) {
+		const res = this.okayedRouteChanges[ action.path ] === true;
+		debug( 'haveOkayedRouteChangeBefore? ', action, this.section, res );
+		return res;
+	}
+
 	quitIfInvalidRoute( props, context ) {
-		debug( '++++++++++++++++++++++++++++++++++++++++++' );
-		debug( 'Step.quitIfInvalidRoute' );
-		const { step, branching, lastAction } = context;
+		// props are actually nextProps and this.props are the current props
+		// same for context -- it's nextContext
+		// remember we're in componentWillReceiveProps
+
+		const { step, branching } = this.context;
+		const { step: nextStep, lastAction } = context;
+
+		console.log( '------------------------------ step, nextStep: ', step, nextStep );
+
+		if ( step !== nextStep ) {
+			this.okayRouteChange( lastAction );
+			return;
+		}
+
 		const hasContinue = !! branching[ step ].continue;
 		const hasJustNavigated = lastAction.type === ROUTE_SET;
 
+		if ( ! hasJustNavigated ) {
+			this.okayRouteChange( lastAction );
+			return;
+		}
+
+		debug( lastAction.type + ' to path ' + lastAction.path + ' at time: ' + lastAction.timestamp );
+		debug( 'time "this" was made:' + this.created_timestamp );
+
+		debug( 'lastAction.timestamp: ' + lastAction.timestamp );
+		debug( 'this.created_timestamp: ' + this.created_timestamp );
+		debug( 'lastAction.timestamp < this.rendered_timestamp?' + ( lastAction.timestamp < this.created_timestamp ) );
+
+		// ignore the route change if it happened before this step instance was made
+		if ( lastAction.timestamp < this.created_timestamp ) {
+			this.okayRouteChange( lastAction );
+			return;
+		}
+
+		debug( 'lastAction.timestamp: ' + lastAction.timestamp );
+		debug( 'this.rendered_timestamp: ' + this.rendered_timestamp );
+		debug( 'lastAction.timestamp < this.rendered_timestamp?' + ( lastAction.timestamp < this.rendered_timestamp ) );
+
+		if ( lastAction.timestamp < this.rendered_timestamp ) {
+			this.okayRouteChange( lastAction );
+			return;
+		}
+
+		if ( this.haveOkayedRouteChangeBefore( lastAction ) ) {
+			return;
+		}
+
+		debug( '++++++++++++++++++++++++++++++++++++++++++' );
+		debug( 'Step.quitIfInvalidRoute' );
 		debug( 'this.section', this.section );
 		debug( 'lastAction', lastAction );
 
 		debug( '******************************************' );
-
 
 		if ( ! hasContinue && hasJustNavigated &&
 				this.isDifferentSection( lastAction.path ) ) {
@@ -154,6 +212,7 @@ export class Step extends Component {
 				this.context.quit();
 			} );
 		} else {
+			this.okayRouteChange( lastAction );
 			debug( 'Step.quitIfInvalidRoute: NOT quitting!' );
 			debug( hasContinue, hasJustNavigated, lastAction, this.isDifferentSection( lastAction.path ) );
 		}
@@ -225,6 +284,7 @@ export class Step extends Component {
 			} ),
 		].filter( Boolean );
 
+		this.rendered_timestamp = Date.now();
 		return (
 			<Card className={ classNames( ...classes ) } style={ stepCoords } >
 				{ children }
